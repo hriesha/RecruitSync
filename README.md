@@ -1,6 +1,6 @@
 # RecruitSync
 
-Tired of losing track of where you applied? This script scans your Gmail for job application emails and automatically logs them to a Google Sheet — company, job title, date, and status. When a follow-up arrives (interview, rejection, offer), it updates the row automatically.
+Tired of losing track of where you applied? Because same. This script scans your Gmail for job application emails and automatically logs them to a Google Sheet - company, job title, date, and status. When a follow-up arrives (interview, rejection, offer), it updates the row automatically.
 
 No installs, no APIs, no accounts. Just Google Apps Script.
 
