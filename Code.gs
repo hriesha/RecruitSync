@@ -337,6 +337,21 @@ function colorRow(sheet, rowNum, status) {
 }
 
 /**
+ * Run this ONCE to backfill colors on all existing rows.
+ * Safe to re-run anytime — just recolors everything based on current status.
+ */
+function colorAllRows() {
+  var sheet = getOrCreateSheet();
+  var data  = sheet.getDataRange().getValues();
+  for (var i = 1; i < data.length; i++) {
+    var status = data[i][COL.STATUS - 1];
+    colorRow(sheet, i + 1, status);
+  }
+  Logger.log('Colored ' + (data.length - 1) + ' rows.');
+  SpreadsheetApp.getActiveSpreadsheet().toast('All rows colored!', 'Done', 4);
+}
+
+/**
  * Returns the array index (0-based) of the row matching threadId, or -1.
  * Skips the header (index 0).
  */
