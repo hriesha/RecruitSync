@@ -1,7 +1,13 @@
 // ============================================================
 // RecruitSync - Gmail → Google Sheets Job Application Tracker
-// v1: Manual run. Paste into Google Apps Script and run
-//     scanJobApplications() to get started.
+// v2: Adds a daily auto-trigger.
+//
+// First-time setup:
+//   1. Run scanJobApplications() once manually to populate the sheet.
+//   2. Run createDailyTrigger() once to enable automatic daily scans.
+//   3. That's it — never touch it again.
+//
+// To stop auto-scanning: run removeDailyTrigger().
 // ============================================================
 
 // --------------- CONFIGURATION ---------------
@@ -341,4 +347,49 @@ function titleCase(str) {
   return str.toLowerCase().replace(/(?:^|\s|-)\S/g, function(c) {
     return c.toUpperCase();
   });
+}
+
+// --------------- TRIGGER SETUP ---------------
+
+/**
+ * Run this ONCE to enable daily auto-scanning.
+ * Creates a trigger that runs scanJobApplications() every morning at 8am.
+ * Safe to call multiple times — won't create duplicates.
+ */
+function createDailyTrigger() {
+  // Remove any existing RecruitSync triggers first to avoid duplicates
+  removeDailyTrigger();
+
+  ScriptApp.newTrigger('scanJobApplications')
+    .timeBased()
+    .everyDays(1)
+    .atHour(8)
+    .create();
+
+  Logger.log('Daily trigger created — scanJobApplications() will run every morning at 8am.');
+  SpreadsheetApp.getActiveSpreadsheet().toast(
+    'Auto-scan enabled! RecruitSync will run every morning at 8am.',
+    'Trigger created',
+    5
+  );
+}
+
+/**
+ * Run this to disable auto-scanning and remove the trigger.
+ */
+function removeDailyTrigger() {
+  var triggers = ScriptApp.getProjectTriggers();
+  var removed = 0;
+  triggers.forEach(function(trigger) {
+    if (trigger.getHandlerFunction() === 'scanJobApplications') {
+      ScriptApp.deleteTrigger(trigger);
+      removed++;
+    }
+  });
+  if (removed > 0) {
+    Logger.log('Removed ' + removed + ' trigger(s).');
+    SpreadsheetApp.getActiveSpreadsheet().toast('Auto-scan disabled.', 'Trigger removed', 5);
+  } else {
+    Logger.log('No triggers found to remove.');
+  }
 }

@@ -49,6 +49,12 @@ That's it. Go back to your spreadsheet and you'll see a "Job Applications" tab f
 
 ---
 
-## Coming next
+## Enable auto-scanning (runs every morning at 8am)
 
-- Auto-run on a daily schedule (no manual trigger needed)
+After your first manual run, you can set it to scan automatically so you never have to think about it again.
+
+In the Apps Script editor, select `createDailyTrigger` from the function dropdown and hit **Run**.
+
+That's it. It'll scan your Gmail every morning at 8am and update the sheet in the background.
+
+To turn it off, run `removeDailyTrigger` the same way.
