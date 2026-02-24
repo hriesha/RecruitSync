@@ -57,4 +57,12 @@ In the Apps Script editor, select `createDailyTrigger` from the function dropdow
 
 That's it. It'll scan your Gmail every morning at 8am and update the sheet in the background.
 
-To turn it off, run `removeDailyTrigger` the same way.
+To pause it (keeps your sheet data), run `pauseRecruitSync` the same way.
+
+---
+
+## Turning it off
+
+**Just pause it** — run `pauseRecruitSync` in the function dropdown. Your sheet stays intact, nothing is deleted. Run `createDailyTrigger` again to resume.
+
+**Full reset** — run `resetRecruitSync`. This removes the trigger and deletes the entire sheet. Cannot be undone. After running it, you can also fully revoke Gmail access at [myaccount.google.com/permissions](https://myaccount.google.com/permissions).

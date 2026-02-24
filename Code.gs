@@ -392,9 +392,10 @@ function createDailyTrigger() {
 }
 
 /**
- * Run this to disable auto-scanning and remove the trigger.
+ * PAUSE — stops auto-scanning but keeps all your data in the sheet.
+ * Run createDailyTrigger() again to re-enable.
  */
-function removeDailyTrigger() {
+function pauseRecruitSync() {
   var triggers = ScriptApp.getProjectTriggers();
   var removed = 0;
   triggers.forEach(function(trigger) {
@@ -404,9 +405,47 @@ function removeDailyTrigger() {
     }
   });
   if (removed > 0) {
-    Logger.log('Removed ' + removed + ' trigger(s).');
-    SpreadsheetApp.getActiveSpreadsheet().toast('Auto-scan disabled.', 'Trigger removed', 5);
+    Logger.log('RecruitSync paused. Your sheet data is untouched.');
+    SpreadsheetApp.getActiveSpreadsheet().toast(
+      'Auto-scan paused. Your data is safe. Run createDailyTrigger() to resume.',
+      'RecruitSync paused',
+      6
+    );
   } else {
-    Logger.log('No triggers found to remove.');
+    Logger.log('No active triggers found — RecruitSync was already paused.');
   }
 }
+
+/**
+ * FULL RESET — removes all triggers AND deletes the Job Applications sheet.
+ * ⚠️  This cannot be undone. All logged data will be lost.
+ * After this, you can also revoke Gmail access at myaccount.google.com/permissions.
+ */
+function resetRecruitSync() {
+  // Remove all triggers
+  ScriptApp.getProjectTriggers().forEach(function(trigger) {
+    if (trigger.getHandlerFunction() === 'scanJobApplications') {
+      ScriptApp.deleteTrigger(trigger);
+    }
+  });
+
+  // Delete the sheet
+  var ss    = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
+  if (sheet) {
+    ss.deleteSheet(sheet);
+    Logger.log('Sheet "' + CONFIG.SHEET_NAME + '" deleted.');
+  } else {
+    Logger.log('Sheet not found — may have already been deleted.');
+  }
+
+  Logger.log('RecruitSync fully reset. To also revoke Gmail access, visit: myaccount.google.com/permissions');
+  Browser.msgBox(
+    'RecruitSync Reset',
+    'All data and triggers have been removed.\\n\\nTo fully revoke Gmail access, go to:\\nmyaccount.google.com/permissions',
+    Browser.Buttons.OK
+  );
+}
+
+// Alias for backwards compatibility
+function removeDailyTrigger() { pauseRecruitSync(); }
