@@ -176,6 +176,7 @@ function updateTrackedThreads(sheet, existingData) {
         var sheetRow = i + 1; // 1-indexed, offset by header
         sheet.getRange(sheetRow, COL.STATUS).setValue(bestStatus);
         sheet.getRange(sheetRow, COL.LAST_UPDATED).setValue(new Date());
+        colorRow(sheet, sheetRow, bestStatus);
         Logger.log('Updated row ' + sheetRow + ': ' + currentStatus + ' → ' + bestStatus);
       }
     } catch (e) {
@@ -277,6 +278,14 @@ function detectStatus(subject, body) {
   return null;
 }
 
+// Row background colors per status
+var STATUS_COLORS = {
+  'Applied':   '#ffffff',  // white
+  'Interview': '#c9daf8',  // blue
+  'Offer':     '#b6d7a8',  // green
+  'Rejected':  '#f4cccc',  // red
+};
+
 // Status priority order (higher index = higher priority)
 var STATUS_PRIORITY = ['Applied', 'Interview', 'Offer', 'Rejected'];
 
@@ -317,6 +326,14 @@ function getOrCreateSheet() {
 
 function appendRow(sheet, company, jobTitle, date, status, threadId) {
   sheet.appendRow([company, jobTitle, date, status, threadId, new Date()]);
+  var newRow = sheet.getLastRow();
+  colorRow(sheet, newRow, status);
+}
+
+/** Sets the background color of an entire row based on status. */
+function colorRow(sheet, rowNum, status) {
+  var color = STATUS_COLORS[status] || '#ffffff';
+  sheet.getRange(rowNum, 1, 1, 6).setBackground(color);
 }
 
 /**
